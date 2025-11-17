@@ -1,12 +1,10 @@
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-                             QLabel, QDoubleSpinBox, QComboBox)
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPainter, QColor
+                             QLabel, QDoubleSpinBox, QComboBox, QApplication)
+from PyQt5.QtCore import QTimer
 import math
 
 from canvas import SimulationCanvas
 from simulation import update_projectile
-
 
 
 class MainWindow(QWidget):
@@ -14,7 +12,7 @@ class MainWindow(QWidget):
         super().__init__()
 
         self.setWindowTitle('Projectile Motion Simulator - v1')
-        self.setMinimumSize(800,600)
+        self.setMinimumSize(800, 600)
 
         self.canvas = SimulationCanvas(self)
 
@@ -25,24 +23,24 @@ class MainWindow(QWidget):
 
         self.is_running = False
 
-        #main layout
+        # main layout
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
 
-        #paramter row
+        # parameter row
         params_layout = QHBoxLayout()
 
         self.speed_label = QLabel('Speed:')
         self.speed_input = QDoubleSpinBox()
-        self.speed_input.setRange(0.0,1000.0)
+        self.speed_input.setRange(0.0, 1000.0)
         self.speed_input.setValue(400.0)
         self.speed_input.setSingleStep(50.0)
         self.speed_input.setSuffix(" px/s")
 
         self.angle_label = QLabel("Angle:")
         self.angle_input = QDoubleSpinBox()
-        self.angle_input.setRange(0.0, 90.0)  #degrees
-        self.angle_input.setValue(45.0)  # default angle
+        self.angle_input.setRange(0.0, 90.0)  # degrees
+        self.angle_input.setValue(45.0)       # default angle
         self.angle_input.setSingleStep(5.0)
         self.angle_input.setSuffix(" °")
 
@@ -62,8 +60,7 @@ class MainWindow(QWidget):
 
         layout.addLayout(params_layout)
 
-
-        #controls layout
+        # controls layout
         controls_layout = QHBoxLayout()
 
         self.start_button = QPushButton('Fire')
@@ -80,17 +77,15 @@ class MainWindow(QWidget):
         self.gravity_combo.currentIndexChanged.connect(self.on_gravity_changed)
         self.on_gravity_changed(self.gravity_combo.currentIndex())
 
-
         self.start_button.clicked.connect(self.start_simulation)
         self.stop_button.clicked.connect(self.stop_simulation)
         self.reset_button.clicked.connect(self.reset_simulation)
-        #
 
+        # timer
         self.timer = QTimer(self)
         self.timer.setInterval(16)
         self.timer.timeout.connect(self.update_simulation)
         self.timer.start()
-
 
     def start_simulation(self):
         c = self.canvas
@@ -112,7 +107,7 @@ class MainWindow(QWidget):
         c.update()
 
     def stop_simulation(self):
-        self.is_running = False #stop button functionality
+        self.is_running = False  # stop button functionality
 
     def reset_simulation(self):
         c = self.canvas
@@ -139,19 +134,19 @@ class MainWindow(QWidget):
         if not self.is_running:
             return
 
-        update_projectile(self)
+        still_running = update_projectile(self)
+        if not still_running:
+            self.is_running = False
 
         self.canvas.update()
 
 
-
-
 if __name__ == "__main__":
     import sys
-    from PyQt5.QtWidgets import QApplication
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
+
 
 
