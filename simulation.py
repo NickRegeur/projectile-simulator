@@ -14,13 +14,35 @@ def update_projectile(main_window):
 
     canvas.path_points.append((canvas.ball_x, canvas.ball_y))
 
-    ground_y = canvas.height()
+    width = canvas.width()
+    height = canvas.height()
 
-    #bounce
-    if canvas.ball_y + r > ground_y:
+    # -------------------------------------
+    # Left wall bounce
+    # -------------------------------------
+    if canvas.ball_x - r < 0:
+        canvas.ball_x = r
+        canvas.vx = -canvas.vx * 0.7
+
+    # -------------------------------------
+    # Right wall bounce
+    # -------------------------------------
+    if canvas.ball_x + r > width:
+        canvas.ball_x = width - r
+        canvas.vx = -canvas.vx * 0.7
+
+    # -------------------------------------
+    # Ceiling bounce
+    # -------------------------------------
+    if canvas.ball_y - r < 0:
+        canvas.ball_y = r
+        canvas.vy = -canvas.vy * 0.7
+
+    #bounce floor
+    if canvas.ball_y + r > height:
 
         # clamp to ground
-        canvas.ball_y = ground_y - r
+        canvas.ball_y = height - r
 
         # bounce physics
         restitution = 0.7
@@ -36,4 +58,3 @@ def update_projectile(main_window):
             return False
 
     return True
-
