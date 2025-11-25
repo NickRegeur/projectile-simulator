@@ -5,12 +5,12 @@ Adjust speed, angle, and gravity to simulate different trajectories in real time
 
 ## Features
 - Adjustable speed (px/s)
+- Adjustable bounce restitution (0-1)
 - Adjustable angle (degrees)
 - Gravity presets: Earth, Moon, Mars
 - Real-time projectile motion
 - Visual trajectory path
 - Realistic bounce
-- Clean 3-file structure (`main.py`, `canvas.py`, `simulation.py`)
 
 ## Controls
 - **Fire** — start simulation  
