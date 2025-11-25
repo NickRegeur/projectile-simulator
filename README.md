@@ -9,6 +9,7 @@ Adjust speed, angle, and gravity to simulate different trajectories in real time
 - Gravity presets: Earth, Moon, Mars
 - Real-time projectile motion
 - Visual trajectory path
+- Realistic bounce
 - Clean 3-file structure (`main.py`, `canvas.py`, `simulation.py`)
 
 ## Controls
