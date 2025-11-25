@@ -51,12 +51,22 @@ class MainWindow(QWidget):
         self.gravity_combo.addItem("Moon (1.62 m/s²)", 1.62)
         self.gravity_combo.addItem("Mars (3.71 m/s²)", 3.71)
 
+        self.wall_restitution_label = QLabel("Wall Restitution:")
+        self.wall_restitution_input = QDoubleSpinBox()
+        self.wall_restitution_input.setRange(0.0, 1.0)
+        self.wall_restitution_input.setSingleStep(0.05)
+        self.wall_restitution_input.setValue(0.7)
+        self.wall_restitution_input.setSuffix(" bounce")
+
         params_layout.addWidget(self.speed_label)
         params_layout.addWidget(self.speed_input)
         params_layout.addWidget(self.angle_label)
         params_layout.addWidget(self.angle_input)
         params_layout.addWidget(self.gravity_label)
         params_layout.addWidget(self.gravity_combo)
+
+        params_layout.addWidget(self.wall_restitution_label)
+        params_layout.addWidget(self.wall_restitution_input)
 
         layout.addLayout(params_layout)
 
@@ -102,6 +112,8 @@ class MainWindow(QWidget):
 
         c.vx = speed * math.cos(angle_rad)
         c.vy = -speed * math.sin(angle_rad)
+
+        self.canvas.wall_restitution = self.wall_restitution_input.value()
 
         self.is_running = True
         c.update()

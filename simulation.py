@@ -7,7 +7,6 @@ def update_projectile(main_window):
 
     dt = 0.016
 
-
     canvas.vy += canvas.g * dt
     canvas.ball_x += canvas.vx * dt
     canvas.ball_y += canvas.vy * dt
@@ -17,38 +16,34 @@ def update_projectile(main_window):
     width = canvas.width()
     height = canvas.height()
 
-    # -------------------------------------
-    # Left wall bounce
-    # -------------------------------------
+    restitution = canvas.wall_restitution
+
+    # LEFT WALL
     if canvas.ball_x - r < 0:
         canvas.ball_x = r
-        canvas.vx = -canvas.vx * 0.7
+        canvas.vx = -canvas.vx * restitution
 
-    # -------------------------------------
-    # Right wall bounce
-    # -------------------------------------
+    # RIGHT WALL
     if canvas.ball_x + r > width:
         canvas.ball_x = width - r
-        canvas.vx = -canvas.vx * 0.7
+        canvas.vx = -canvas.vx * restitution
 
-    # -------------------------------------
-    # Ceiling bounce
-    # -------------------------------------
+    # CEILING
     if canvas.ball_y - r < 0:
         canvas.ball_y = r
-        canvas.vy = -canvas.vy * 0.7
+        canvas.vy = -canvas.vy * restitution
 
-    #bounce floor
+    # GROUND (original)
     if canvas.ball_y + r > height:
 
         # clamp to ground
         canvas.ball_y = height - r
 
         # bounce physics
-        restitution = 0.7
+        floor_restitution = 0.7
         friction = 0.98
 
-        canvas.vy = -canvas.vy * restitution
+        canvas.vy = -canvas.vy * floor_restitution
         canvas.vx = canvas.vx * friction
 
         # stop if the bounce is basically dead

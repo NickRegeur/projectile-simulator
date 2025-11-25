@@ -18,7 +18,10 @@ class SimulationCanvas(QWidget):
 
         self.path_points = []
 
+        self.wall_restitution = 0.7
+
         self.setMinimumSize(600,400)
+
 
     def paintEvent(self, event):
         painter = QPainter(self)
