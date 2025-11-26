@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QColor
+from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtGui import QPainter, QColor, QPen, QPolygonF
 
 
 class SimulationCanvas(QWidget):
@@ -35,15 +35,17 @@ class SimulationCanvas(QWidget):
         painter.drawLine(0, ground_y - 1, self.width(), ground_y - 1)
 
         #trajectory
-        if self.path_points:
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(QColor(120, 120, 120))
-            dot_radius = 3
-            for px, py in self.path_points:
-                cx = int(px)
-                cy = int(py)
-                painter.drawEllipse(cx - dot_radius, cy - dot_radius,
-                                    dot_radius * 2, dot_radius * 2)
+        if len(self.path_points) >= 2:
+            points = [QPointF(px, py) for (px, py) in self.path_points]
+
+            pen = QPen(QColor(120, 120, 120))
+            pen.setWidth(2)
+            pen.setCapStyle(Qt.RoundCap)
+            pen.setJoinStyle(Qt.RoundJoin)
+            painter.setPen(pen)
+            painter.setBrush(Qt.NoBrush)
+
+            painter.drawPolyline(QPolygonF(points))
 
         #ball
         x_center = int(self.ball_x)
