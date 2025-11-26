@@ -27,18 +27,18 @@ class SimulationCanvas(QWidget):
         painter = QPainter(self)
         painter.setRenderHints(QPainter.Antialiasing)
 
-        painter.fillRect(self.rect(), QColor(240,240,240))
+        painter.fillRect(self.rect(), QColor(250,250,252))
 
         #ground line
         ground_y = self.height()
-        painter.setPen(QColor(180, 180, 180))
+        painter.setPen(QColor(200, 200, 200))
         painter.drawLine(0, ground_y - 1, self.width(), ground_y - 1)
 
         #trajectory
         if len(self.path_points) >= 2:
             points = [QPointF(px, py) for (px, py) in self.path_points]
 
-            pen = QPen(QColor(120, 120, 120))
+            pen = QPen(QColor(120, 120, 120, 180))
             pen.setWidth(2)
             pen.setCapStyle(Qt.RoundCap)
             pen.setJoinStyle(Qt.RoundJoin)
@@ -46,6 +46,14 @@ class SimulationCanvas(QWidget):
             painter.setBrush(Qt.NoBrush)
 
             painter.drawPolyline(QPolygonF(points))
+
+            tail_points = points[-20:] if len(points) > 20 else points
+            pen_tail = QPen(QColor(80, 160, 255, 220))
+            pen_tail.setWidth(3)
+            pen_tail.setCapStyle(Qt.RoundCap)
+            pen_tail.setJoinStyle(Qt.RoundJoin)
+            painter.setPen(pen_tail)
+            painter.drawPolyline(QPolygonF(tail_points))
 
         #ball
         x_center = int(self.ball_x)

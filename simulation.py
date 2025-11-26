@@ -13,6 +13,10 @@ def update_projectile(main_window):
 
     canvas.path_points.append((canvas.ball_x, canvas.ball_y))
 
+    max_points = 800
+    if len(canvas.path_points) > max_points:
+        canvas.path_points.pop(0)
+
     width = canvas.width()
     height = canvas.height()
 
