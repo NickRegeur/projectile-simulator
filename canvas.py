@@ -20,6 +20,8 @@ class SimulationCanvas(QWidget):
 
         self.wall_restitution = 0.7
 
+        self.show_trajectory = True
+
         self.setMinimumSize(600,400)
 
 
@@ -35,7 +37,7 @@ class SimulationCanvas(QWidget):
         painter.drawLine(0, ground_y - 1, self.width(), ground_y - 1)
 
         #trajectory
-        if len(self.path_points) >= 2:
+        if self.show_trajectory and len(self.path_points) >= 2:
             points = [QPointF(px, py) for (px, py) in self.path_points]
 
             pen = QPen(QColor(120, 120, 120, 180))

@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-                             QLabel, QDoubleSpinBox, QComboBox, QApplication)
+                             QLabel, QDoubleSpinBox, QComboBox, QApplication, QCheckBox)
 from PyQt5.QtCore import QTimer
 import math
 
@@ -81,15 +81,22 @@ class MainWindow(QWidget):
         controls_layout.addWidget(self.stop_button)
         controls_layout.addWidget(self.reset_button)
 
+        self.show_traj_checkbox = QCheckBox("Show trajectory")
+        self.show_traj_checkbox.setChecked(True)
+        controls_layout.addWidget(self.show_traj_checkbox)
+
         layout.addLayout(controls_layout)
         self.setLayout(layout)
 
+        #connections
         self.gravity_combo.currentIndexChanged.connect(self.on_gravity_changed)
         self.on_gravity_changed(self.gravity_combo.currentIndex())
 
         self.start_button.clicked.connect(self.start_simulation)
         self.stop_button.clicked.connect(self.stop_simulation)
         self.reset_button.clicked.connect(self.reset_simulation)
+
+        self.show_traj_checkbox.toggled.connect(self.on_show_traj_toggled)
 
         # timer
         self.timer = QTimer(self)
@@ -150,6 +157,10 @@ class MainWindow(QWidget):
         if not still_running:
             self.is_running = False
 
+        self.canvas.update()
+
+    def on_show_traj_toggled(self, checked):
+        self.canvas.show_trajectory = checked
         self.canvas.update()
 
 
