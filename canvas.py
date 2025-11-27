@@ -101,8 +101,26 @@ class SimulationCanvas(QWidget):
 
     def mouseMoveEvent(self, event):
         if self.dragging:
-            self.ball_x = event.x() - self.drag_offset_x
-            self.ball_y = event.y() - self.drag_offset_y
+            new_x = event.x() - self.drag_offset_x
+            new_y = event.y() - self.drag_offset_y
+
+            r = self.ball_radius
+            w = self.width()
+            h = self.height()
+
+            if new_x < r:
+                new_x = r
+            if new_x > w - r:
+                new_x = w - r
+
+            if new_y < r:
+                new_y = r
+            if new_y > h - r:
+                new_y = h - r
+
+            self.ball_x = new_x
+            self.ball_y = new_y
+
             self.update()
 
 
