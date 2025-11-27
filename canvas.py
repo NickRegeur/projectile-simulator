@@ -21,6 +21,7 @@ class SimulationCanvas(QWidget):
         self.wall_restitution = 0.7
 
         self.show_trajectory = True
+        self.ghost_points = []
 
         self.setMinimumSize(600,400)
 
@@ -35,6 +36,18 @@ class SimulationCanvas(QWidget):
         ground_y = self.height()
         painter.setPen(QColor(200, 200, 200))
         painter.drawLine(0, ground_y - 1, self.width(), ground_y - 1)
+
+        if len(self.ghost_points) >= 2:
+            ghost_pen = QPen(QColor(160, 160, 160, 130))
+            ghost_pen.setWidth(1)
+            ghost_pen.setStyle(Qt.DashLine)
+            ghost_pen.setCapStyle(Qt.RoundCap)
+            ghost_pen.setJoinStyle(Qt.RoundJoin)
+            painter.setPen(ghost_pen)
+            painter.setBrush(Qt.NoBrush)
+
+            ghost_qpoints = [QPointF(px, py) for (px, py) in self.ghost_points]
+            painter.drawPolyline(QPolygonF(ghost_qpoints))
 
         #trajectory
         if self.show_trajectory and len(self.path_points) >= 2:

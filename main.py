@@ -98,11 +98,17 @@ class MainWindow(QWidget):
 
         self.show_traj_checkbox.toggled.connect(self.on_show_traj_toggled)
 
+        self.speed_input.valueChanged.connect(lambda _: self.update_ghost_path())
+        self.angle_input.valueChanged.connect(lambda _: self.update_ghost_path())
+
+
         # timer
         self.timer = QTimer(self)
         self.timer.setInterval(16)
         self.timer.timeout.connect(self.update_simulation)
         self.timer.start()
+
+        self.update_ghost_path()
 
     def start_simulation(self):
         c = self.canvas
@@ -141,6 +147,49 @@ class MainWindow(QWidget):
         self.is_running = False
         c.update()
 
+        self.update_ghost_path()
+
+    def update_ghost_path(self):
+        c = self.canvas
+
+        ghost_points = []
+
+        x = self.initial_ball_x
+        y = self.initial_ball_y
+
+        speed = self.speed_input.value()
+        angle_deg = self.angle_input.value()
+        angle_rad = math.radians(angle_deg)
+
+        vx = speed * math.cos(angle_rad)
+        vy = -speed * math.sin(angle_rad)
+
+        g = c.g
+        dt = 0.016
+
+        width = c.width()
+        height = c.height()
+
+        max_steps = 600  # ~10 seconds of sim
+
+        for _ in range(max_steps):
+            vy += g * dt
+            x += vx * dt
+            y += vy * dt
+
+            # stop if it hits the "ground"
+            if y > height:
+                break
+
+            # optionally stop if it flies off horizontally
+            if x < 0 or x > width:
+                break
+
+            ghost_points.append((x, y))
+
+        c.ghost_points = ghost_points
+        c.update()
+
     def on_gravity_changed(self, index):
         real_g = self.gravity_combo.itemData(index)
 
@@ -148,6 +197,8 @@ class MainWindow(QWidget):
         scale = self.earth_g_pixels / earth_real_g
 
         self.canvas.g = real_g * scale
+
+        self.update_ghost_path()
 
     def update_simulation(self):
         if not self.is_running:
