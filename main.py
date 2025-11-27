@@ -128,6 +128,8 @@ class MainWindow(QWidget):
 
         self.canvas.wall_restitution = self.wall_restitution_input.value()
 
+        c.ghost_points.clear()
+
         self.is_running = True
         c.update()
 
@@ -207,6 +209,8 @@ class MainWindow(QWidget):
         still_running = update_projectile(self)
         if not still_running:
             self.is_running = False
+
+            self.update_ghost_path()
 
         self.canvas.update()
 
