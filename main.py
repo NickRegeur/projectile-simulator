@@ -114,10 +114,6 @@ class MainWindow(QWidget):
         c = self.canvas
         c.path_points.clear()
 
-        c.ball_x = self.initial_ball_x
-        c.ball_y = self.initial_ball_y
-
-        c.path_points.clear()
 
         speed = self.speed_input.value()
         angle_deg = self.angle_input.value()
@@ -156,8 +152,8 @@ class MainWindow(QWidget):
 
         ghost_points = []
 
-        x = self.initial_ball_x
-        y = self.initial_ball_y
+        x = c.ball_x
+        y = c.ball_y
 
         speed = self.speed_input.value()
         angle_deg = self.angle_input.value()

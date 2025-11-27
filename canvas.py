@@ -23,6 +23,8 @@ class SimulationCanvas(QWidget):
         self.show_trajectory = True
         self.ghost_points = []
 
+        self.dragging = False
+
         self.setMinimumSize(600,400)
 
 
@@ -81,3 +83,37 @@ class SimulationCanvas(QWidget):
         painter.setBrush(QColor(80,160,255))
         painter.setPen(Qt.NoPen)
         painter.drawEllipse(x,y,diameter,diameter)
+
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            dx = event.x() - self.ball_x
+            dy = event.y() - self.ball_y
+            if dx * dx + dy * dy <= self.ball_radius ** 2:
+                self.dragging = True
+                self.drag_offset_x = dx
+                self.drag_offset_y = dy
+                self.path_points.clear()
+                if hasattr(self, "ghost_points"):
+                    self.ghost_points.clear()
+                self.update()
+
+
+    def mouseMoveEvent(self, event):
+        if self.dragging:
+            self.ball_x = event.x() - self.drag_offset_x
+            self.ball_y = event.y() - self.drag_offset_y
+            self.update()
+
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton and self.dragging:
+            self.dragging = False
+
+            parent = self.parent()
+            if parent is not None and hasattr(parent, "update_ghost_path"):
+                parent.update_ghost_path()
+            self.update()
+
+
+
