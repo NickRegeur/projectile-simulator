@@ -15,7 +15,9 @@ Adjust speed, angle, and gravity to simulate different trajectories in real time
 ## Controls
 - **Fire** — start simulation  
 - **Pause** — stop updating motion  
-- **Reset** — reset position and clear trajectory  
+- **Reset** — reset position and clear trajectory
+
+My first real highschool project on python, i made it to learn GUI creation, practice physics and learn git.
 
 ## Running
 ```bash
