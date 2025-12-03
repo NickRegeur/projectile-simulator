@@ -37,20 +37,18 @@ def update_projectile(main_window):
         canvas.ball_y = r
         canvas.vy = -canvas.vy * restitution
 
-    # GROUND (original)
+    # GROUND
     if canvas.ball_y + r > height:
 
         # clamp to ground
         canvas.ball_y = height - r
 
-        # bounce physics
-        floor_restitution = 0.7
-        friction = 0.98
+        floor_restitution = canvas.floor_restitution
+        friction = canvas.floor_friction
 
         canvas.vy = -canvas.vy * floor_restitution
         canvas.vx = canvas.vx * friction
 
-        # stop if the bounce is basically dead
         if abs(canvas.vy) < 5 and abs(canvas.vx) < 5:
             canvas.vy = 0.0
             canvas.vx = 0.0

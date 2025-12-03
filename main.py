@@ -1,7 +1,9 @@
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
                              QLabel, QDoubleSpinBox, QComboBox, QApplication, QCheckBox)
 from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QColor
 import math
+
 
 from canvas import SimulationCanvas
 from simulation import update_projectile
@@ -68,6 +70,12 @@ class MainWindow(QWidget):
         params_layout.addWidget(self.wall_restitution_label)
         params_layout.addWidget(self.wall_restitution_input)
 
+        self.ball_type_label = QLabel("Ball type:")
+        self.ball_type_combo = QComboBox()
+        self.ball_type_combo.addItem("Normal")
+        self.ball_type_combo.addItem("Heavy")
+        self.ball_type_combo.addItem("Bouncy")
+
         layout.addLayout(params_layout)
 
         # controls layout
@@ -88,6 +96,12 @@ class MainWindow(QWidget):
         layout.addLayout(controls_layout)
         self.setLayout(layout)
 
+        params_layout.addWidget(self.wall_restitution_label)
+        params_layout.addWidget(self.wall_restitution_input)
+
+        params_layout.addWidget(self.ball_type_label)
+        params_layout.addWidget(self.ball_type_combo)
+
         #connections
         self.gravity_combo.currentIndexChanged.connect(self.on_gravity_changed)
         self.on_gravity_changed(self.gravity_combo.currentIndex())
@@ -100,6 +114,10 @@ class MainWindow(QWidget):
 
         self.speed_input.valueChanged.connect(lambda _: self.update_ghost_path())
         self.angle_input.valueChanged.connect(lambda _: self.update_ghost_path())
+
+        self.ball_type_combo.currentIndexChanged.connect(self.on_ball_type_changed)
+        self.on_ball_type_changed(self.ball_type_combo.currentIndex())
+
 
 
         # timer
@@ -143,6 +161,9 @@ class MainWindow(QWidget):
         c.path_points.clear()
 
         self.is_running = False
+
+        self.on_ball_type_changed(self.ball_type_combo.currentIndex())
+
         c.update()
 
         self.update_ghost_path()
@@ -213,6 +234,35 @@ class MainWindow(QWidget):
     def on_show_traj_toggled(self, checked):
         self.canvas.show_trajectory = checked
         self.canvas.update()
+
+    def on_ball_type_changed(self, index):
+        c = self.canvas
+        ball_type = self.ball_type_combo.currentText()
+
+        if ball_type == "Normal":
+            c.ball_radius = 20
+            c.floor_restitution = 0.7
+            c.floor_friction = 0.98
+            c.ball_color = QColor(80, 160, 255)
+            c.wall_restitution = self.wall_restitution_input.value()
+
+        elif ball_type == "Heavy":
+            c.ball_radius = 24
+            c.floor_restitution = 0.45
+            c.floor_friction = 0.90
+            c.ball_color = QColor(50, 80, 140)
+            c.wall_restitution = self.wall_restitution_input.value() * 0.8
+
+        elif ball_type == "Bouncy":
+            c.ball_radius = 16
+            c.floor_restitution = 0.9
+            c.floor_friction = 0.995
+            c.ball_color = QColor(255, 140, 0)
+            c.wall_restitution = min(1.0, self.wall_restitution_input.value() * 1.2)
+
+        self.update_ghost_path()
+        c.update()
+
 
 
 if __name__ == "__main__":

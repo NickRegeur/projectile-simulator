@@ -20,6 +20,11 @@ class SimulationCanvas(QWidget):
 
         self.wall_restitution = 0.7
 
+        self.floor_restitution = 0.7
+        self.floor_friction = 0.98
+
+        self.ball_color = QColor(80, 160, 255)
+
         self.show_trajectory = True
         self.ghost_points = []
 
@@ -94,7 +99,7 @@ class SimulationCanvas(QWidget):
             painter.drawEllipse(gx, gy, gdiam, gdiam)
 
         # actual ball
-        painter.setBrush(QColor(80, 160, 255))
+        painter.setBrush(self.ball_color)
         painter.setPen(Qt.NoPen)
         painter.drawEllipse(x, y, diameter, diameter)
 
