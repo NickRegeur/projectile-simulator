@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-                             QLabel, QDoubleSpinBox, QComboBox, QApplication, QCheckBox)
+                             QLabel, QDoubleSpinBox, QComboBox, QApplication, QCheckBox, QFrame)
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QColor
 import math
@@ -16,22 +16,48 @@ class MainWindow(QWidget):
         self.setWindowTitle('Projectile Motion Simulator - v1')
         self.setMinimumSize(800, 600)
 
+        # single canvas
         self.canvas = SimulationCanvas(self)
 
         self.initial_ball_x = self.canvas.ball_x
         self.initial_ball_y = self.canvas.ball_y
-
         self.earth_g_pixels = self.canvas.g
 
         self.is_running = False
 
-        # main layout
-        layout = QVBoxLayout()
-        layout.addWidget(self.canvas)
+        # === ROOT LAYOUT: canvas on top, controls below ===
+        root_layout = QVBoxLayout()
+        self.setLayout(root_layout)
 
-        # parameter row
-        params_layout = QHBoxLayout()
+        root_layout.setContentsMargins(12, 12, 12, 12)
+        root_layout.setSpacing(8)
 
+        root_layout.addWidget(self.canvas, 1)
+
+
+        controls_frame = QFrame()
+        controls_frame.setObjectName("controlsFrame")
+        controls_layout = QVBoxLayout()
+        controls_frame.setLayout(controls_layout)
+
+        root_layout.addWidget(controls_frame, 0)
+
+        controls_layout.setContentsMargins(10, 8, 10, 8)
+        controls_layout.setSpacing(6)
+        controls_frame.setMaximumHeight(220)
+
+        # ---- Title ----
+        title_label = QLabel("Projectile Simulator")
+        title_label.setObjectName("titleLabel")
+
+        subtitle_label = QLabel("Adjust settings and fire")
+        subtitle_label.setObjectName("subtitleLabel")
+
+        # ---- Parameter rows ----
+        params_layout = QVBoxLayout()
+
+        # row 1: speed + angle
+        row1 = QHBoxLayout()
         self.speed_label = QLabel('Speed:')
         self.speed_input = QDoubleSpinBox()
         self.speed_input.setRange(0.0, 1000.0)
@@ -41,34 +67,24 @@ class MainWindow(QWidget):
 
         self.angle_label = QLabel("Angle:")
         self.angle_input = QDoubleSpinBox()
-        self.angle_input.setRange(0.0, 90.0)  # degrees
-        self.angle_input.setValue(45.0)       # default angle
+        self.angle_input.setRange(0.0, 90.0)
+        self.angle_input.setValue(45.0)
         self.angle_input.setSingleStep(5.0)
         self.angle_input.setSuffix(" °")
 
+        row1.addWidget(self.speed_label)
+        row1.addWidget(self.speed_input)
+        row1.addWidget(self.angle_label)
+        row1.addWidget(self.angle_input)
+        params_layout.addLayout(row1)
+
+        # row 2: gravity + ball type
+        row2 = QHBoxLayout()
         self.gravity_label = QLabel('Gravity:')
         self.gravity_combo = QComboBox()
-
         self.gravity_combo.addItem("Earth (9.81 m/s²)", 9.81)
         self.gravity_combo.addItem("Moon (1.62 m/s²)", 1.62)
         self.gravity_combo.addItem("Mars (3.71 m/s²)", 3.71)
-
-        self.wall_restitution_label = QLabel("Wall Restitution:")
-        self.wall_restitution_input = QDoubleSpinBox()
-        self.wall_restitution_input.setRange(0.0, 1.0)
-        self.wall_restitution_input.setSingleStep(0.05)
-        self.wall_restitution_input.setValue(0.7)
-        self.wall_restitution_input.setSuffix(" bounce")
-
-        params_layout.addWidget(self.speed_label)
-        params_layout.addWidget(self.speed_input)
-        params_layout.addWidget(self.angle_label)
-        params_layout.addWidget(self.angle_input)
-        params_layout.addWidget(self.gravity_label)
-        params_layout.addWidget(self.gravity_combo)
-
-        params_layout.addWidget(self.wall_restitution_label)
-        params_layout.addWidget(self.wall_restitution_input)
 
         self.ball_type_label = QLabel("Ball type:")
         self.ball_type_combo = QComboBox()
@@ -76,31 +92,49 @@ class MainWindow(QWidget):
         self.ball_type_combo.addItem("Heavy")
         self.ball_type_combo.addItem("Bouncy")
 
-        layout.addLayout(params_layout)
+        row2.addWidget(self.gravity_label)
+        row2.addWidget(self.gravity_combo)
+        row2.addWidget(self.ball_type_label)
+        row2.addWidget(self.ball_type_combo)
+        params_layout.addLayout(row2)
 
-        # controls layout
-        controls_layout = QHBoxLayout()
+        # row 3: wall restitution
+        row3 = QHBoxLayout()
+        self.wall_restitution_label = QLabel("Wall Restitution:")
+        self.wall_restitution_input = QDoubleSpinBox()
+        self.wall_restitution_input.setRange(0.0, 1.0)
+        self.wall_restitution_input.setSingleStep(0.05)
+        self.wall_restitution_input.setValue(0.7)
+        self.wall_restitution_input.setSuffix(" bounce")
 
+        row3.addWidget(self.wall_restitution_label)
+        row3.addWidget(self.wall_restitution_input)
+        params_layout.addLayout(row3)
+
+        # ---- Buttons row ----
+        buttons_row = QHBoxLayout()
         self.start_button = QPushButton('Fire')
+        self.start_button.setObjectName("fireButton")
         self.stop_button = QPushButton('Pause')
+        self.stop_button.setObjectName("pauseButton")
         self.reset_button = QPushButton('Reset')
+        self.reset_button.setObjectName("resetButton")
 
-        controls_layout.addWidget(self.start_button)
-        controls_layout.addWidget(self.stop_button)
-        controls_layout.addWidget(self.reset_button)
+        buttons_row.addWidget(self.start_button)
+        buttons_row.addWidget(self.stop_button)
+        buttons_row.addWidget(self.reset_button)
 
+        # trajectory toggle
         self.show_traj_checkbox = QCheckBox("Show trajectory")
         self.show_traj_checkbox.setChecked(True)
+
+        controls_layout.addWidget(title_label)
+        controls_layout.addWidget(subtitle_label)
+        controls_layout.addSpacing(8)
+        controls_layout.addLayout(params_layout)
+        controls_layout.addSpacing(8)
+        controls_layout.addLayout(buttons_row)
         controls_layout.addWidget(self.show_traj_checkbox)
-
-        layout.addLayout(controls_layout)
-        self.setLayout(layout)
-
-        params_layout.addWidget(self.wall_restitution_label)
-        params_layout.addWidget(self.wall_restitution_input)
-
-        params_layout.addWidget(self.ball_type_label)
-        params_layout.addWidget(self.ball_type_combo)
 
         #connections
         self.gravity_combo.currentIndexChanged.connect(self.on_gravity_changed)
@@ -127,6 +161,58 @@ class MainWindow(QWidget):
         self.timer.start()
 
         self.update_ghost_path()
+
+        self.setStyleSheet("""
+                    QWidget {
+                        background-color: #20232a;
+                        color: #e0e0e0;
+                        font-family: Segoe UI, Arial;
+                        font-size: 12px;
+                    }
+                    QFrame#controlsFrame {
+                        background-color: #181a20;
+                        border-radius: 10px;
+                        padding: 8px;
+                    }
+                    QLabel#titleLabel {
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+                    QLabel#subtitleLabel {
+                        font-size: 11px;
+                        color: #9a9fb0;
+                    }
+                    QDoubleSpinBox, QComboBox {
+                        background-color: #2b2f3a;
+                        border: 1px solid #3a3f4d;
+                        border-radius: 6px;
+                        padding: 2px 6px;
+                    }
+                    QPushButton {
+                        background-color: #2b2f3a;
+                        border-radius: 6px;
+                        padding: 6px 10px;
+                    }
+                    QPushButton:hover {
+                        background-color: #3a3f4d;
+                    }
+                    QPushButton#fireButton {
+                        background-color: #ff7a3c;
+                        color: #111;
+                        font-weight: bold;
+                    }
+                    QPushButton#fireButton:hover {
+                        background-color: #ff955f;
+                    }
+                    QPushButton#pauseButton {
+                        background-color: #ffaa2b;
+                        color: #111;
+                    }
+                    QPushButton#resetButton {
+                        background-color: #e04f5f;
+                        color: #f5f5f5;
+                    }
+                """)
 
     def start_simulation(self):
         c = self.canvas
@@ -269,6 +355,7 @@ if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
     window = MainWindow()
+    window.showMaximized()
     window.show()
     sys.exit(app.exec_())
 
