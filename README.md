@@ -3,7 +3,7 @@
 A real-time projectile motion visualizer built with **Python** and **PyQt5**.  
 This project allows users to adjust launch parameters and observe realistic projectile trajectories with gravity and bouncing.
 
-This is my **first fully self-made Python GUI project**, created to practice:
+This is my first fully self-made Python GUI project, created to practice:
 - GUI development with PyQt5  
 - Basic physics simulation  
 - Structuring multi-file projects  
