@@ -20,7 +20,7 @@ Adjust speed, angle, and gravity to simulate different trajectories in real time
 
 ##
 My first real highschool project on python, i made it to learn GUI creation, practice physics and learn git.
-
+##
 ## Running
 ```bash
 pip install PyQt5
