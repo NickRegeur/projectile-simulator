@@ -27,6 +27,7 @@ class SimulationCanvas(QWidget):
         self.hovering_ball = False
 
         self.setMinimumSize(600,400)
+        self.setMouseTracking(True)
 
 
     def paintEvent(self, event):
