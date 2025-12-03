@@ -44,7 +44,7 @@ class MainWindow(QWidget):
 
         controls_layout.setContentsMargins(10, 8, 10, 8)
         controls_layout.setSpacing(6)
-        controls_frame.setMaximumHeight(220)
+        controls_frame.setMaximumHeight(260)
 
         # ---- Title ----
         title_label = QLabel("Projectile Simulator")
@@ -404,7 +404,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.showMaximized()
-    window.show()
     sys.exit(app.exec_())
 
 
