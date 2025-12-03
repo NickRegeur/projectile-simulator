@@ -24,6 +24,7 @@ class SimulationCanvas(QWidget):
         self.ghost_points = []
 
         self.dragging = False
+        self.hovering_ball = False
 
         self.setMinimumSize(600,400)
 
@@ -72,17 +73,31 @@ class SimulationCanvas(QWidget):
             painter.setPen(pen_tail)
             painter.drawPolyline(QPolygonF(tail_points))
 
-        #ball
+    #ball
+        # ball + hover glow
         x_center = int(self.ball_x)
         y_center = int(self.ball_y)
 
         x = x_center - self.ball_radius
         y = y_center - self.ball_radius
-        diameter = self.ball_radius*2
+        diameter = self.ball_radius * 2
 
-        painter.setBrush(QColor(80,160,255))
+        if self.hovering_ball or self.dragging:
+            glow_radius = self.ball_radius + 10
+            gx = x_center - glow_radius
+            gy = y_center - glow_radius
+            gdiam = glow_radius * 2
+
+            painter.setBrush(QColor(80, 160, 255, 80))  # transparent glow
+            painter.setPen(Qt.NoPen)
+            painter.drawEllipse(gx, gy, gdiam, gdiam)
+
+        # actual ball
+        painter.setBrush(QColor(80, 160, 255))
         painter.setPen(Qt.NoPen)
-        painter.drawEllipse(x,y,diameter,diameter)
+        painter.drawEllipse(x, y, diameter, diameter)
+
+
 
 
     def mousePressEvent(self, event):
@@ -100,28 +115,32 @@ class SimulationCanvas(QWidget):
 
 
     def mouseMoveEvent(self, event):
+        mx = event.x()
+        my = event.y()
+
+        dx = mx - self.ball_x
+        dy = my - self.ball_y
+        inside_ball = dx * dx + dy * dy <= self.ball_radius ** 2
+
+        # update hover state
+        self.hovering_ball = inside_ball and not self.dragging
+
+        # If dragging, move the ball
         if self.dragging:
-            new_x = event.x() - self.drag_offset_x
-            new_y = event.y() - self.drag_offset_y
+            new_x = mx - self.drag_offset_x
+            new_y = my - self.drag_offset_y
 
             r = self.ball_radius
             w = self.width()
             h = self.height()
 
-            if new_x < r:
-                new_x = r
-            if new_x > w - r:
-                new_x = w - r
-
-            if new_y < r:
-                new_y = r
-            if new_y > h - r:
-                new_y = h - r
+            new_x = max(r, min(new_x, w - r))
+            new_y = max(r, min(new_y, h - r))
 
             self.ball_x = new_x
             self.ball_y = new_y
 
-            self.update()
+        self.update()
 
 
     def mouseReleaseEvent(self, event):
@@ -132,6 +151,11 @@ class SimulationCanvas(QWidget):
             if parent is not None and hasattr(parent, "update_ghost_path"):
                 parent.update_ghost_path()
             self.update()
+
+    def leaveEvent(self, event):
+        self.hovering_ball = False
+        self.update()
+        super().leaveEvent(event)
 
 
 
