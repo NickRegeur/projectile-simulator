@@ -56,7 +56,7 @@ class MainWindow(QWidget):
         # ---- Parameter rows ----
         params_layout = QVBoxLayout()
 
-        # row 1: speed + angle
+        # row 1: speed + angle  (Launch parameters)
         row1 = QHBoxLayout()
         self.speed_label = QLabel('Speed:')
         self.speed_input = QDoubleSpinBox()
@@ -98,7 +98,7 @@ class MainWindow(QWidget):
         row2.addWidget(self.ball_type_combo)
         params_layout.addLayout(row2)
 
-        # row 3: wall restitution
+        # row 3: wall restitution  (Collisions)
         row3 = QHBoxLayout()
         self.wall_restitution_label = QLabel("Wall Restitution:")
         self.wall_restitution_input = QDoubleSpinBox()
@@ -111,7 +111,7 @@ class MainWindow(QWidget):
         row3.addWidget(self.wall_restitution_input)
         params_layout.addLayout(row3)
 
-        # ---- Buttons row ----
+        # ---- Buttons row (centered) ----
         buttons_row = QHBoxLayout()
         self.start_button = QPushButton('Fire')
         self.start_button.setObjectName("fireButton")
@@ -120,21 +120,46 @@ class MainWindow(QWidget):
         self.reset_button = QPushButton('Reset')
         self.reset_button.setObjectName("resetButton")
 
+        buttons_row.addStretch()
         buttons_row.addWidget(self.start_button)
         buttons_row.addWidget(self.stop_button)
         buttons_row.addWidget(self.reset_button)
+        buttons_row.addStretch()
 
         # trajectory toggle
         self.show_traj_checkbox = QCheckBox("Show trajectory")
         self.show_traj_checkbox.setChecked(True)
 
+        self.stats_label = QLabel("Max height: –   Range: –   Time: –")
+        self.stats_label.setObjectName("statsLabel")
+
+        line_top = QFrame()
+        line_top.setFrameShape(QFrame.HLine)
+        line_top.setFrameShadow(QFrame.Sunken)
+
+        line_mid = QFrame()
+        line_mid.setFrameShape(QFrame.HLine)
+        line_mid.setFrameShadow(QFrame.Sunken)
+
+        # ---- Assemble controls layout ----
+        controls_layout.setContentsMargins(10, 8, 10, 8)
+        controls_layout.setSpacing(6)
+
         controls_layout.addWidget(title_label)
         controls_layout.addWidget(subtitle_label)
-        controls_layout.addSpacing(8)
+        controls_layout.addWidget(line_top)
         controls_layout.addLayout(params_layout)
-        controls_layout.addSpacing(8)
+        controls_layout.addWidget(line_mid)
         controls_layout.addLayout(buttons_row)
         controls_layout.addWidget(self.show_traj_checkbox)
+        controls_layout.addWidget(self.stats_label)
+
+        self.speed_input.setToolTip("Initial launch speed (pixels per second)")
+        self.angle_input.setToolTip("Launch angle relative to the horizontal")
+        self.gravity_combo.setToolTip("Select the planet / gravity")
+        self.ball_type_combo.setToolTip("Choose ball mass & bounciness")
+        self.wall_restitution_input.setToolTip("How much energy walls keep on bounce")
+
 
         #connections
         self.gravity_combo.currentIndexChanged.connect(self.on_gravity_changed)
@@ -261,6 +286,9 @@ class MainWindow(QWidget):
 
         x = c.ball_x
         y = c.ball_y
+        x0 = c.ball_x
+        y0 = c.ball_y
+        min_y = y0
 
         speed = self.speed_input.value()
         angle_deg = self.angle_input.value()
@@ -275,24 +303,44 @@ class MainWindow(QWidget):
         width = c.width()
         height = c.height()
 
-        max_steps = 600  # ~10 seconds of sim
+        max_steps = 600
 
         for _ in range(max_steps):
             vy += g * dt
             x += vx * dt
             y += vy * dt
 
-            # stop if it hits the "ground"
+
+            if y < min_y:
+                min_y = y
+
+
             if y > height:
                 break
 
-            # optionally stop if it flies off horizontally
+
             if x < 0 or x > width:
                 break
 
             ghost_points.append((x, y))
 
         c.ghost_points = ghost_points
+
+        if hasattr(self, "stats_label"):
+            if ghost_points:
+                last_x, last_y = ghost_points[-1]
+                flight_time = len(ghost_points) * dt
+                max_height = max(0.0, y0 - min_y)
+                range_px = abs(last_x - x0)
+
+                self.stats_label.setText(
+                    f"Max height: {max_height:.1f} px   "
+                    f"Range: {range_px:.1f} px   "
+                    f"Time: {flight_time:.2f} s"
+                )
+            else:
+                self.stats_label.setText("Max height: –   Range: –   Time: –")
+
         c.update()
 
     def on_gravity_changed(self, index):
