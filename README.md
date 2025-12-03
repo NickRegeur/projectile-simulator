@@ -1,32 +1,47 @@
-# Projectile Motion Simulator V1
+# Projectile Motion Simulator v1
 
-A simple projectile motion visualizer built with Python and PyQt5.  
-Adjust speed, angle, and gravity to simulate different trajectories in real time.
+A real-time projectile motion visualizer built with **Python** and **PyQt5**.  
+This project allows users to adjust launch parameters and observe realistic projectile trajectories with gravity and bouncing.
+
+This is my **first fully self-made Python GUI project**, created to practice:
+- GUI development with PyQt5  
+- Basic physics simulation  
+- Structuring multi-file projects  
+- Using Git and GitHub  
+
+---
 
 ## Features
-- Adjustable speed (px/s)
-- Adjustable bounce restitution (0-1)
-- Adjustable angle (degrees)
-- Gravity presets: Earth, Moon, Mars
+
+- Adjustable launch speed (px/s)
+- Adjustable launch angle (degrees)
+- Adjustable wall/bounce restitution (0–1)
+- Gravity presets:
+  - Earth
+  - Moon
+  - Mars
 - Real-time projectile motion
 - Visual trajectory path
-- Realistic bounce
+- Realistic bouncing
+- Interactive projectile positioning (drag & hover)
+
+---
 
 ## Controls
-- **Fire** — start simulation  
-- **Pause** — stop updating motion  
-- **Reset** — reset position and clear trajectory
 
+- **Fire** — Start the simulation  
+- **Pause** — Pause the motion  
+- **Reset** — Reset position and clear trajectory  
 
-##
-My first real highschool project on python, i made it to learn GUI creation, practice physics and learn git.
-##
-## Running
+---
+
+## Running the Project
+
+### Requirements
+- Python 3.x
+- PyQt5
+
+### Install & Run
 ```bash
 pip install PyQt5
 python main.py
-
-
-
-
-
